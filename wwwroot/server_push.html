@@ -1,0 +1,41 @@
+<html>
+
+<head>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="/css/element-ui.css">
+</head>
+
+<body>
+    <p>
+        <div><div>Latency: <strong><span id="latencyDiv"></span></strong></div><div>Load time: <strong><span id="imgTiming">0</span>ms</strong></div></div>
+    </p>
+    <p>
+        <div>
+            <img width=512 height=384 onload="imageLoadTime()" src="/images/2MB.jpg">
+        </div>
+    </p>
+    <script>
+        var value = "; " + document.cookie;
+        var parts = value.split("; latency=");
+        if (parts.length == 2){
+            document.getElementById("latencyDiv").innerHTML = parts.pop().split(";").shift();
+        }else{
+            document.getElementById("latencyDiv").innerHTML = "0ms"
+        }
+
+        function imageLoadTime() {
+            console.log(window.origin, "imageLoadTime", window.performance.timing, Date.now())
+            document.getElementById("imgTiming").innerHTML = Date.now() - window.performance.timing.domLoading
+        }
+        
+    </script>
+</body>
+<script src="/js/no-push.js"></script>
+<script src="/js/vue.js"></script>
+<script src="/js/element-ui.js"></script>
+<script src="/js/jquery.js"></script>
+
+</html>

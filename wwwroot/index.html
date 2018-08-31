@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="/css/element-ui.css">
+</head>
+
+<body>
+    <div id="app">
+        <el-container>
+            <el-header>
+                <el-menu default-active="1" class="el-menu-demo" mode="horizontal" @select="handleSelect">
+                    <el-menu-item index="1" @click="frameChange">Request and Response Multiplexing</el-menu-item>
+                    <el-menu-item index="2" @click="frameChange">Server Push</el-menu-item>
+                    <div style="float:right; height:60px;line-height: 60px">
+                        <el-radio-group v-model="latency" size="medium">
+                            <el-radio-button label="0ms"></el-radio-button>
+                            <el-radio-button label="20ms"></el-radio-button>
+                            <el-radio-button label="100ms"></el-radio-button>
+                            <el-radio-button label="1s"></el-radio-button>
+                        </el-radio-group>
+                    </div>
+                </el-menu>
+            </el-header>
+            <el-main>
+
+                <div>
+                </div>
+                <div style="width:50%;float:left;display: block;">
+                    <h1>HTTP/1.1</h1>
+                    <iframe :src="frame11Src" marginheight="0" frameborder="0" scrolling="no" width="100%" height="460px" style="height:-webkit-fill-available"></iframe>
+                </div>
+                <div style="width:50%;height:100%;float:left;display: block;">
+                    <h1>HTTP/2</h1>
+                    <iframe :src="frame20Src" marginheight="0" frameborder="0" scrolling="no" width="100%" height="460px" style="height:-webkit-fill-available"></iframe>
+                </div>
+            </el-main>
+        </el-container>
+    </div>
+</body>
+<script src="/js/vue.js"></script>
+<script src="/js/element-ui.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        created: function () {
+            this.delCookie("latency")
+        },
+        data: function () {
+            return {
+                activeIndex: '1',
+                latency: '0ms',
+                frame11Src: "http://" + window.location.hostname + "/multiplexing.html",
+                frame20Src: "https://" + window.location.hostname + "/multiplexing.html"
+            }
+        },
+        watch: {
+            latency: function (latencyNew) {
+                if (latencyNew == '0ms') {
+                    this.delCookie("latency")
+                } else {
+                    this.setCookie("latency", latencyNew)
+                }
+                this.frameChange()
+            },
+            activeIndex: function (activeIndexNew) {
+                this.frameChange()
+            }
+        },
+        methods: {
+            handleSelect(key, keyPath) {
+                this.activeIndex = key
+            },
+            frameChange() {
+                ts = new Date().getTime()
+                switch (this.activeIndex) {
+                    case '1':
+                        this.frame11Src = "http://" + window.location.hostname + "/multiplexing.html?ts=" + ts
+                        this.frame20Src = "https://" + window.location.hostname + "/multiplexing.html?ts=" + ts
+                        break
+                    case '2':
+                        this.frame11Src = "http://" + window.location.hostname + "/server_push.html?ts=" + ts
+                        this.frame20Src = "https://" + window.location.hostname + "/server_push.html?ts=" + ts
+                        break
+                }
+            },
+            setCookie(key, value) {
+                var date = new Date()
+                date.setTime(date.getTime() + 24 * 60 * 60 * 1000)
+                document.cookie = key + '=' + value + ';expires=' + date.toUTCString()
+            },
+            delCookie(key) {
+                var date = new Date()
+                date.setTime(date.getTime() - 24 * 60 * 60 * 1000)
+                document.cookie = key + "='';expires=" + date.toUTCString()
+            }
+        }
+    })
+</script>
+
+</html>
